@@ -41,8 +41,8 @@ test.describe('E2E: Dynamic Invoice Creation & Real-Time SSE Payment Settlement'
     await expect(dashboard.createModal.modal).toBeHidden();
 
     // Verify new invoice appears in table as DRAFT
-    await expect(page.getByText('Acme Quantum Dynamics')).toBeVisible();
-    await expect(page.getByText('$1169.10 USD')).toBeVisible();
+    await expect(page.getByText('Acme Quantum Dynamics').first()).toBeVisible();
+    await expect(page.getByText('$1169.10 USD').first()).toBeVisible();
   });
 
   test('should advance state from DRAFT -> PENDING -> PROCESSING -> PAID via Real-time SSE updates', async ({ page }) => {
