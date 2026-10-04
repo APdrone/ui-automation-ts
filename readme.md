@@ -28,14 +28,16 @@ pw-e2e-ts/
 │   │       └── loginPage.ts
 │   │
 │   └── tests/                 # Automated E2E Test Suites
-│       └── billpulse/
 │           ├── billpulse-auth-rbac.spec.ts         # Persona presets (ADMIN, MANAGER, VIEWER)
 │           ├── billpulse-invoice-flow.spec.ts      # Real-time SSE state advancement (DRAFT -> PAID)
 │           ├── billpulse-hybrid-auth.spec.ts       # API fast-path JWT session pre-seeding
 │           ├── billpulse-async-export.spec.ts      # Asynchronous CSV batch download
-│           └── billpulse-resilience-and-softassert.spec.ts # Microservice 500 fault & SoftAssert
+│           ├── billpulse-resilience-and-softassert.spec.ts # Microservice 500 fault & SoftAssert
+│           ├── billpulse-filters-and-void.spec.ts  # Search queries, status tabs, VOID state & logout
+│           └── billpulse-modal-validation-and-latency.spec.ts # Dynamic recalculations & network latency UX
 ├── package.json
 └── README.md
+
 ```
 
 ---
