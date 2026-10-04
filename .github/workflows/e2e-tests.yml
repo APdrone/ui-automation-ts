@@ -58,6 +58,7 @@ jobs:
         run: |
           cd app-billpulse
           npm ci
+          npm run build:contracts
           npm run dev:server &
           cd client
           npm ci
