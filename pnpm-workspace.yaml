@@ -1,0 +1,4 @@
+minimumReleaseAgeExclude:
+  - '@script-crux/adapter-playwright@1.0.0'
+  - '@script-crux/core-api@1.0.0'
+  - '@script-crux/core-shared@1.0.0'
