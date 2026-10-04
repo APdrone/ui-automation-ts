@@ -46,10 +46,11 @@ test.describe('E2E: Dynamic Invoice Creation & Real-Time SSE Payment Settlement'
   });
 
   test('should advance state from DRAFT -> PENDING -> PROCESSING -> PAID via Real-time SSE updates', async ({ page }) => {
+    const customerName = `Starlight Robotics ${Date.now()}`;
     // 1. Create invoice
     await dashboard.openCreateInvoiceModal();
     await dashboard.createModal.fillInvoiceForm(
-      'Starlight Robotics',
+      customerName,
       'finance@starlight.io',
       [{ description: 'Edge Compute Module', quantity: 5, unitPrice: 100 }],
       0,
@@ -58,9 +59,10 @@ test.describe('E2E: Dynamic Invoice Creation & Real-Time SSE Payment Settlement'
     await dashboard.createModal.submit();
     await expect(dashboard.createModal.modal).toBeHidden();
 
-    const invoiceRow = page.locator('tr').filter({ hasText: 'Starlight Robotics' });
+    const invoiceRow = page.locator('tr').filter({ hasText: customerName });
     await expect(invoiceRow).toBeVisible();
     await expect(invoiceRow.getByTestId('status-badge-draft')).toBeVisible();
+
 
     // 2. Click Submit on row -> status changes to PENDING
     const submitBtn = invoiceRow.locator('button', { hasText: 'Submit' });

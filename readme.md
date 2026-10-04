@@ -1,55 +1,55 @@
-# Playwright E2E Test Suite (`pw-e2e-ts`)
+# Playwright E2E Test Automation Suite (`pw-e2e-ts`)
 
 > Production-ready End-to-End (E2E) UI Automation Test Suite powered by Playwright, TypeScript, and `@script-crux` framework adapters.
 
+This repository automates the **BillPulse FinTech & SaaS Billing Platform**, validating real-time Server-Sent Events (SSE) updates, role-based access control (RBAC), network fault tolerance, and hybrid fast-path API authentication.
+
 ---
 
-## 🏛️ Architecture & Layered Design
+## 🏛️ Project Architecture
 
 ```
 pw-e2e-ts/
-├── .github/workflows/         # CI/CD Pipeline (GitHub Actions)
-├── playwright.config.ts        # Playwright Orchestration & Execution Config
+├── playwright.config.ts        # Playwright Multi-Browser Configuration (Chromium, Firefox, WebKit)
 ├── tsconfig.json
 │
 ├── src/
-│   ├── config/                # 1. CONFIGURATION LAYER
-│   │   ├── env.config.ts      # Multi-environment validation (.env.qa, .env.stg)
-│   │   ├── constants.ts       # Timeouts, endpoints, static selectors
-│   │   └── mock-router.ts     # Network mocking and interception
+│   ├── api/                   # API Controllers for Hybrid E2E
+│   │   └── billPulseAuthController.ts # Fast-path pre-seeded session authentication
 │   │
-│   ├── pages/                 # 2. PAGE OBJECT / ADAPTATION LAYER
-│   │   ├── components/        # Reusable UI components (Header, Footer, Modals)
-│   │   ├── base.page.ts       # Abstract Base Page with resilient wait wrappers
-│   │   ├── login.page.ts
-│   │   ├── inventory.page.ts
-│   │   └── checkout.page.ts
+│   ├── pages/                 # Page Object Models (POM) extending BasePage
+│   │   ├── billpulse/
+│   │   │   ├── LoginPage.ts                  # Persona selectors & credential login
+│   │   │   ├── InvoiceDashboardPage.ts       # Table, search, filters, action triggers
+│   │   │   ├── NavbarComponent.ts            # Persona badges, live SSE indicator, reset
+│   │   │   └── CreateInvoiceModalComponent.ts # Dynamic pricing & multi-line invoice builder
+│   │   └── sauceDemoApp/
+│   │       ├── inventoryPage.ts
+│   │       └── loginPage.ts
 │   │
-│   └── core/                  # 3. TEST UTILITIES & HOOKS
-│       ├── global.setup.ts    # Authentication state capture
-│       ├── array.utils.ts     # Data sorting & verification algorithms
-│       └── logger.utils.ts    # Structured test execution logs
-│
-├── tests/                     # 4. TEST SPECIFICATION LAYER
-│   ├── data/
-│   │   └── test-data.json     # Parameterized test data sets
-│   ├── e2e-checkout.spec.ts   # Core business checkout workflows
-│   ├── sorting.spec.ts        # Inventory sorting & filter validations
-│   ├── multi-tab.spec.ts      # Multi-page / new window browser scenarios
-│   └── network-fault.spec.ts  # Network resilience and error-handling tests
-│
-├── .env.qa                    # QA environment configurations
-└── .env.stg                   # Staging environment configurations
+│   └── tests/                 # Automated E2E Test Suites
+│       └── billpulse/
+│           ├── billpulse-auth-rbac.spec.ts         # Persona presets (ADMIN, MANAGER, VIEWER)
+│           ├── billpulse-invoice-flow.spec.ts      # Real-time SSE state advancement (DRAFT -> PAID)
+│           ├── billpulse-hybrid-auth.spec.ts       # API fast-path JWT session pre-seeding
+│           ├── billpulse-async-export.spec.ts      # Asynchronous CSV batch download
+│           └── billpulse-resilience-and-softassert.spec.ts # Microservice 500 fault & SoftAssert
+├── package.json
+└── README.md
 ```
 
 ---
 
-## 📦 Framework Dependencies
+## 📦 Core Library Integration (`@script-crux`)
 
-This project consumes the modular framework packages:
-- [`@script-crux/adapter-playwright`](https://www.npmjs.com/package/@script-crux/adapter-playwright): Provides step decorators, custom reporters, and browser management helpers.
-- [`@script-crux/core-shared`](https://www.npmjs.com/package/@script-crux/core-shared): Provides central logging, retry strategies, and environment loaders.
-- [`@script-crux/core-api`](https://www.npmjs.com/package/@script-crux/core-api): Test data seeding and database validation.
+This suite actively consumes:
+- **`@script-crux/adapter-playwright`**:
+  - `BasePage`: Base page object class providing safe wait wrappers and logger hooks.
+  - `BaseApi`: API request wrapper used for pre-seeding browser JWT tokens.
+  - `SoftAssert`: Non-blocking multi-step assertions engine (`createSoftAssert()`).
+  - `NetworkMocking`: Network route interceptor and microservice fault injector (`mockServiceFailure()`).
+  - `EventStreamHelper`: Server-Sent Events (SSE) stream listener (`waitForClientEvent()`).
+- **`@script-crux/core-shared`**: Central logger (`TestLogger`) and configuration loader (`ConfigManager`).
 
 ---
 
@@ -57,7 +57,9 @@ This project consumes the modular framework packages:
 
 ### 1. Prerequisites
 - Node.js >= 18
-- `npm` or `pnpm`
+- Running BillPulse Target Application:
+  - Backend cluster: `npm run dev:server` in `app-billpulse` (ports 4000–4005)
+  - Frontend client: `npm run dev:client` in `app-billpulse` (port 3000 / 3001)
 
 ### 2. Installation
 
@@ -65,39 +67,25 @@ This project consumes the modular framework packages:
 # Install dependencies
 npm install
 
-# Install Playwright browser binaries
+# Install browser binaries (Chromium, Firefox, WebKit)
 npx playwright install --with-deps
 ```
 
-### 3. Execution
+### 3. Running UI Tests
 
 ```bash
-# Run all tests headlessly
-npx playwright test
+# Run all tests headlessly across configured browsers
+npm test
 
-# Run tests in UI mode (Interactive)
+# Run tests targeting Chromium
+npm test -- --project=chromium
+
+# Run tests in interactive UI mode
 npx playwright test --ui
 
-# Run tests against a specific environment
-ENV=qa npx playwright test
-
-# Run a specific test spec
-npx playwright test tests/e2e-checkout.spec.ts
-
-# View HTML Test Report
-npx playwright show-report
+# Run a specific test suite
+npm test -- src/tests/billpulse/billpulse-resilience-and-softassert.spec.ts
 ```
-
----
-
-## 📊 Reporting & CI/CD
-
-- **HTML Report:** Generated automatically on each test run under `playwright-report/`.
-- **ReportPortal Integration:** Enable live test reporting via environment variables:
-  ```bash
-  RP_ENABLED=true RP_API_KEY="<your_token>" RP_PROJECT="<project_name>" npx playwright test
-  ```
-- **GitHub Actions:** Automated test runs on every pull request and scheduled nightly runs.
 
 ---
 
