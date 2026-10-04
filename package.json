@@ -1,20 +1,26 @@
 {
   "name": "pw-e2e-ts",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright E2E Test Suite powered by @script-crux core libraries",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "node --preserve-symlinks ./node_modules/@playwright/test/cli.js test",
+    "test:ui": "node --preserve-symlinks ./node_modules/@playwright/test/cli.js test --ui",
+    "test:headed": "node --preserve-symlinks ./node_modules/@playwright/test/cli.js test --headed"
+  },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
     "@playwright/test": "^1.61.0",
-    "@types/node": "^26.0.0"
+    "@types/node": "^22.0.0"
   },
+
   "dependencies": {
-    "@script-crux/adapter-playwright": "^1.0.0",
-    "@script-crux/core-api": "^1.0.0",
-    "@script-crux/core-shared": "^1.0.0"
+    "@script-crux/adapter-playwright": "file:../core-lib/packages/adapter-playwright",
+    "@script-crux/core-api": "file:../core-lib/packages/core-api",
+    "@script-crux/core-shared": "file:../core-lib/packages/core-shared"
   }
 }
