@@ -7,6 +7,7 @@ export class LoginPage extends BasePage {
   public readonly submitButton: Locator;
   public readonly adminPersonaButton: Locator;
   public readonly managerPersonaButton: Locator;
+  public readonly payerPersonaButton: Locator;
   public readonly viewerPersonaButton: Locator;
   public readonly errorMessage: Locator;
 
@@ -17,6 +18,7 @@ export class LoginPage extends BasePage {
     this.submitButton = page.getByTestId('login-submit-btn');
     this.adminPersonaButton = page.getByTestId('persona-admin-btn');
     this.managerPersonaButton = page.getByTestId('persona-manager-btn');
+    this.payerPersonaButton = page.getByTestId('persona-payer-btn');
     this.viewerPersonaButton = page.getByTestId('persona-viewer-btn');
     this.errorMessage = page.getByTestId('login-error-message');
   }
@@ -25,13 +27,16 @@ export class LoginPage extends BasePage {
     await this.page.goto('/');
   }
 
-  async selectPersona(role: 'ADMIN' | 'MANAGER' | 'VIEWER'): Promise<void> {
+  async selectPersona(role: 'ADMIN' | 'MANAGER' | 'VIEWER' | 'PAYER'): Promise<void> {
     switch (role) {
       case 'ADMIN':
         await this.clickElement(this.adminPersonaButton, 'Admin Persona Button');
         break;
       case 'MANAGER':
         await this.clickElement(this.managerPersonaButton, 'Manager Persona Button');
+        break;
+      case 'PAYER':
+        await this.clickElement(this.payerPersonaButton, 'Payer Persona Button');
         break;
       case 'VIEWER':
         await this.clickElement(this.viewerPersonaButton, 'Viewer Persona Button');
@@ -45,7 +50,7 @@ export class LoginPage extends BasePage {
     await this.clickElement(this.submitButton, 'Login Submit Button');
   }
 
-  async loginAs(role: 'ADMIN' | 'MANAGER' | 'VIEWER'): Promise<void> {
+  async loginAs(role: 'ADMIN' | 'MANAGER' | 'VIEWER' | 'PAYER'): Promise<void> {
     await this.selectPersona(role);
     await this.clickElement(this.submitButton, `Login as ${role}`);
   }
